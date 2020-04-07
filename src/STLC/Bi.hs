@@ -8,7 +8,7 @@ type Name = String
 data Type
   = 𝔹
   | Type :→ Type
-  deriving (Eq, Show)
+  deriving (Eq)
 
 data Term
   = Var Name
@@ -48,12 +48,57 @@ check г t τ = do
   τ' ← infer г t
   guard (τ ≡ τ')
 
+
+--------------------------------
+
+infixr 0 :→, :⇒
+
+instance Show Type where
+  show 𝔹 = "𝔹"
+  show (α@(_ :→ _) :→ β) = "(" ++ show α ++ ") → " ++ show β
+  show (α :→ β) = show α ++ " → " ++ show β
+
+instance Show Term where
+  show (Var x) = x
+  show (x :⇒ t) = "λ" ++ x ++ showBody t where
+    showBody (x' :⇒ t') = " " ++ x' ++ showBody t'
+    showBody t = ". " ++ show t
+  show (t₁ :@ t₂)   = t₁' ++ t₂' where
+    t₁' = case t₁ of
+      _ :⇒ _ -> "(" ++ show t₁ ++ ")"
+      _ -> show t₁
+    t₂' = case t₂ of  
+      Var _ -> " " ++ show t₂
+      TT -> " " ++ show t₂
+      FF -> " " ++ show t₂
+      _ -> "(" ++ show t₂ ++ ")"
+  show TT = "true"
+  show FF = "false"
+  show (If t₁ t₂ t₃) = "if " ++ show t₁ ++ " then " ++ show t₂ ++ " else " ++ show t₃
+  show (Let x t₁ t₂) = "let " ++ x ++ " = " ++ show t₁ ++ " in " ++ show t₂
+  show (The τ t) = "(" ++ t' ++ " : " ++ show τ ++ ")" where
+    t' = case t of
+      Var _ -> show t
+      TT -> show t
+      FF -> show t
+      _ -> "(" ++ show t ++ ")"
+
 main :: IO ()
 main = do
   let not = "x" :⇒ If (Var "x") FF TT
-  print $ check [] not (𝔹 :→ 𝔹)
-  print $ check [("¬", (𝔹 :→ 𝔹)), ("x", 𝔹)] (Var "¬" :@ Var "x") 𝔹
-  print $ check [("¬", (𝔹 :→ 𝔹)), ("x", 𝔹)] ((The (𝔹 :→ 𝔹) not) :@ Var "x") 𝔹
-  print $ check [] (The (𝔹 :→ 𝔹) ("x" :⇒ Let "z" (Var "x") (Var "z"))) (𝔹 :→ 𝔹)
-  print $ check [] (The (𝔹 :→ 𝔹) ("x" :⇒ The 𝔹 (Var "x"))) (𝔹 :→ 𝔹)
-  print $ check [] ("x" :⇒ (Var "x")) (𝔹 :→ 𝔹)
+  check' [] not (𝔹 :→ 𝔹)
+  check' [("¬", (𝔹 :→ 𝔹)), ("x", 𝔹)] (Var "¬" :@ Var "x") 𝔹
+  check' [("¬", (𝔹 :→ 𝔹)), ("x", 𝔹)] ((The (𝔹 :→ 𝔹) not) :@ Var "x") 𝔹
+  check' [] (The (𝔹 :→ 𝔹) ("x" :⇒ Let "z" (Var "x") (Var "z"))) (𝔹 :→ 𝔹)
+  check' [] (The (𝔹 :→ 𝔹) ("x" :⇒ The 𝔹 (Var "x"))) (𝔹 :→ 𝔹)
+  check' [] ((The (𝔹 :→ 𝔹) ("x" :⇒ The 𝔹 (Var "x"))) :@ TT) 𝔹
+  check' [] ("x" :⇒ (Var "x")) (𝔹 :→ 𝔹)
+  check' [] ("f" :⇒ "g" :⇒ "x" :⇒ Var "f" :@ (Var "g" :@ Var "x")) ((𝔹 :→ 𝔹) :→ (𝔹 :→ 𝔹) :→ (𝔹 :→ 𝔹))
+    where
+      check' ctx term ty = do
+        putStr "> :t "
+        print term
+        case check ctx term ty of
+          Just _ -> print ty
+          Nothing -> putStrLn "error"
+        
