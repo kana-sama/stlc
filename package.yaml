@@ -17,7 +17,9 @@ library:
   - LambdaCase
   - GeneralizedNewtypeDeriving
   - BlockArguments
+  - UnicodeSyntax
   dependencies:
   - base >= 4.7 && < 5
   - mtl
   - transformers
+  - base-unicode-symbols

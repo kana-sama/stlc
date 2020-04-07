@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b228863dc7fa618ab3cfd2f2e992d9f9090299799780b0ee0dc963997dd4271a
+-- hash: 8b823ed6720dc8db07fbbdbdd378128d4868877c293ce125c985f5c87c218e7f
 
 name:           stlc
 version:        0.1.0.0
@@ -15,7 +15,6 @@ author:         Author name here
 maintainer:     example@example.com
 copyright:      2020 Author name here
 license:        BSD3
-license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
@@ -26,15 +25,17 @@ source-repository head
 
 library
   exposed-modules:
+      STLC.Bi
       STLC.MLLike
       STLC.Traditional
   other-modules:
       Paths_stlc
   hs-source-dirs:
       src
-  default-extensions: LambdaCase GeneralizedNewtypeDeriving BlockArguments
+  default-extensions: LambdaCase GeneralizedNewtypeDeriving BlockArguments UnicodeSyntax
   build-depends:
       base >=4.7 && <5
+    , base-unicode-symbols
     , mtl
     , transformers
   default-language: Haskell2010
