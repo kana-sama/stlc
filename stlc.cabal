@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8b823ed6720dc8db07fbbdbdd378128d4868877c293ce125c985f5c87c218e7f
+-- hash: 270f2028482bc800e721c75a1a35349f218e2e86db7f2a680a72524396c66778
 
 name:           stlc
 version:        0.1.0.0
@@ -26,6 +26,8 @@ source-repository head
 library
   exposed-modules:
       STLC.Bi
+      STLC.Bi2
+      STLC.Dependent
       STLC.MLLike
       STLC.Traditional
   other-modules:
